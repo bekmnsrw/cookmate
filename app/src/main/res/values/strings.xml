@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">cookmate</string>
+
+    <!-- Bottom Navigation Labels -->
+    <string name="screen_recipes">Recipes</string>
+    <string name="screen_favorites">Favorites</string>
+    <string name="screen_settings">Settings</string>
+
+    <!-- Screen Titles -->
+    <string name="categories_title">Categories</string>
+    <string name="dishes_title">Dishes</string>
+    <string name="settings_title">Settings</string>
+    <string name="favorites_title">Favorites</string>
+    <string name="recipe_title">Recipe</string>
 </resources>
