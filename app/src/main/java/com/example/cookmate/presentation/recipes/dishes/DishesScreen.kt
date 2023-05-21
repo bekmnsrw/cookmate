@@ -1,11 +1,14 @@
 package com.example.cookmate.presentation.recipes.dishes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,7 +25,6 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
-import coil.size.Scale
 import com.example.cookmate.R
 import com.example.cookmate.Screen
 import com.example.cookmate.domain.dtos.MealDto
@@ -34,7 +36,6 @@ fun DishesScreen(
     categoryName: String,
     viewModel: DishesViewModel = hiltViewModel()
 ) {
-
     val state = viewModel.state.collectAsStateWithLifecycle()
     val action by viewModel.action.collectAsStateWithLifecycle(initialValue = null)
 
@@ -53,7 +54,6 @@ fun DishesContent(
     eventHandler: (DishesScreenEvent) -> Unit,
     categoryName: String
 ) {
-
     if (!screenState.isLoaded) {
         LaunchedEffect(Unit) {
             eventHandler.invoke(DishesScreenEvent.LoadingDishes(categoryName))
@@ -62,38 +62,59 @@ fun DishesContent(
 
     DishesList(
         screenState = screenState,
-        navController = navController
+        navController = navController,
+        categoryName = categoryName
     )
 }
 
 @Composable
 fun DishesList(
     screenState: DishesScreenState,
-    navController: NavController
+    navController: NavController,
+    categoryName: String
 ) {
-
     val dishes = screenState.dishes
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .background(CustomTheme.themeColors.background)
+    Column(
+        modifier = Modifier.background(CustomTheme.themeColors.background)
     ) {
-        items(
-            screenState.dishes.size
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(CustomTheme.themeColors.primary),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            ListItem(mealDto = dishes[it]) { mealId ->
-                navController.navigate(Screen.Recipe.createRoute(mealId))
+            IconButton(onClick = { navController.navigateUp() }) {
+                Icon(
+                    imageVector = Icons.Rounded.ArrowBack,
+                    contentDescription = null,
+                    tint = CustomTheme.themeColors.onPrimary,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+            Text(
+                text = categoryName,
+                color = CustomTheme.themeColors.onPrimary,
+                style = CustomTheme.themeTypography.screenHeading,
+            )
+        }
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(screenState.dishes.size) {
+                ListItem(mealDto = dishes[it]) { mealId ->
+                    navController.navigate(Screen.Recipe.createRoute(mealId))
+                }
             }
         }
+        CircularProgressBar(
+            screenState = screenState
+        )
     }
-    CircularProgressBar(
-        screenState = screenState
-    )
 }
 
 @Composable
@@ -101,7 +122,6 @@ fun ListItem(
     mealDto: MealDto,
     onClick: (String) -> Unit
 ) {
-
     Card(
         elevation = 6.dp,
         shape = RoundedCornerShape(8.dp),

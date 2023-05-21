@@ -34,7 +34,6 @@ fun CategoriesScreen(
     navController: NavController,
     viewModel: CategoriesViewModel = hiltViewModel()
 ) {
-
     val state = viewModel.state.collectAsStateWithLifecycle()
     val action by viewModel.action.collectAsStateWithLifecycle(initialValue = null)
 
@@ -72,32 +71,40 @@ fun CategoriesList(
     screenState: CategoriesScreenState,
     navController: NavController
 ) {
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(CustomTheme.themeColors.background)
+    Column(
+        modifier = Modifier.background(CustomTheme.themeColors.background)
     ) {
-        item {
-            Text(
-                text = stringResource(id = R.string.categories_title),
-                color = CustomTheme.themeColors.onBackground,
-                style = CustomTheme.themeTypography.screenHeading,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
-        items(
-            screenState.categories,
-            key = { it.id }
+        Text(
+            text = stringResource(id = R.string.categories_title),
+            color = CustomTheme.themeColors.onPrimary,
+            style = CustomTheme.themeTypography.screenHeading,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(CustomTheme.themeColors.primary)
+                .padding(
+                    start = 16.dp,
+                    top = 5.dp,
+                    bottom = 5.dp
+                )
+        )
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            ListItem(categoryDto = it) { categoryName ->
-                navController.navigate(Screen.Dishes.createRoute(categoryName))
+            items(
+                screenState.categories,
+                key = { it.id }
+            ) {
+                ListItem(categoryDto = it) { categoryName ->
+                    navController.navigate(Screen.Dishes.createRoute(categoryName))
+                }
             }
         }
+        CircularProgressBar(
+            screenState = screenState
+        )
     }
-    CircularProgressBar(
-        screenState = screenState
-    )
 }
 
 @Composable
@@ -105,15 +112,9 @@ fun ListItem(
     categoryDto: CategoryDto,
     onClick: (String) -> Unit
 ) {
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                bottom = 16.dp,
-                start = 16.dp,
-                end = 16.dp
-            )
             .clickable { onClick.invoke(categoryDto.name) },
         elevation = 6.dp,
         shape = RoundedCornerShape(8.dp),
