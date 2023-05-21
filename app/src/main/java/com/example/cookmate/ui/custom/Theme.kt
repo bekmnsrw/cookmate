@@ -81,6 +81,14 @@ fun Theme(
         buttonText = TextStyle(
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
+        ),
+        bottomNavigationText = TextStyle(
+            fontSize = when (textSize) {
+                SMALL -> 10.sp
+                MEDIUM -> 12.sp
+                BIG -> 14.sp
+            },
+            fontWeight = FontWeight.Medium
         )
     )
 

@@ -21,7 +21,8 @@ data class ThemeTypography(
     val cardSubtitle: TextStyle,
     val title: TextStyle,
     val subtitle: TextStyle,
-    val buttonText: TextStyle
+    val buttonText: TextStyle,
+    val bottomNavigationText: TextStyle
 )
 
 object CustomTheme {

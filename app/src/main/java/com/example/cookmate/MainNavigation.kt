@@ -89,7 +89,7 @@ fun NavigationHost(
                         label = {
                             Text(
                                 stringResource(id = screen.name),
-                                style = CustomTheme.themeTypography.cardSubtitle
+                                style = CustomTheme.themeTypography.bottomNavigationText
                             )
                         },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
