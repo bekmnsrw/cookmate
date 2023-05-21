@@ -1,5 +1,6 @@
 package com.example.cookmate.presentation.recipes.details
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
@@ -25,6 +26,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.cookmate.R
+import com.example.cookmate.ui.custom.CustomTheme
 
 @Composable
 fun RecipeScreen(
@@ -68,7 +70,11 @@ fun RecipeInfo(
 
     val recipe = screenState.recipe
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CustomTheme.themeColors.background)
+    ) {
         item {
             if (recipe != null) {
                 AsyncImage(
@@ -90,15 +96,22 @@ fun RecipeInfo(
                 ) {
                     Text(
                         text = recipe.name,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        color = CustomTheme.themeColors.onBackground,
+                        style = CustomTheme.themeTypography.screenHeading
                     )
                     Row() {
                         Icon(
                             imageVector = Icons.Rounded.RestaurantMenu,
                             contentDescription = null,
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp),
+                            tint = CustomTheme.themeColors.primary
                         )
-                        Text(text = recipe.category)
+                        Text(
+                            text = recipe.category,
+                            color = CustomTheme.themeColors.onBackground,
+                            style = CustomTheme.themeTypography.title
+                        )
                     }
                     Row(
                         modifier = Modifier.padding(bottom = 16.dp)
@@ -106,14 +119,23 @@ fun RecipeInfo(
                         Icon(
                             imageVector = Icons.Rounded.Public,
                             contentDescription = null,
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp),
+                            tint = CustomTheme.themeColors.primary
                         )
-                        Text(text = recipe.country)
+                        Text(
+                            text = recipe.country,
+                            color = CustomTheme.themeColors.onBackground,
+                            style = CustomTheme.themeTypography.title,
+                        )
                     }
-                    Divider()
+                    Divider(
+                        color = CustomTheme.themeColors.primary
+                    )
                     Text(
                         text = recipe.instructions,
-                        modifier = Modifier.padding(top = 16.dp)
+                        modifier = Modifier.padding(top = 16.dp),
+                        color = CustomTheme.themeColors.onBackground,
+                        style = CustomTheme.themeTypography.subtitle
                     )
                 }
             }
@@ -131,7 +153,9 @@ private fun CircularProgressBar(screenState: RecipeScreenState) {
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                color = CustomTheme.themeColors.primary
+            )
         }
     }
 }

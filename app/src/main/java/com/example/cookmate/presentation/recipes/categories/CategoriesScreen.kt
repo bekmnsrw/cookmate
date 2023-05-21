@@ -1,5 +1,6 @@
 package com.example.cookmate.presentation.recipes.categories
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,10 +24,10 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
-import coil.size.Scale
 import com.example.cookmate.R
 import com.example.cookmate.Screen
 import com.example.cookmate.domain.dtos.CategoryDto
+import com.example.cookmate.ui.custom.CustomTheme
 
 @Composable
 fun CategoriesScreen(
@@ -73,11 +74,15 @@ fun CategoriesList(
 ) {
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CustomTheme.themeColors.background)
     ) {
         item {
             Text(
                 text = stringResource(id = R.string.categories_title),
+                color = CustomTheme.themeColors.onBackground,
+                style = CustomTheme.themeTypography.screenHeading,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -111,11 +116,14 @@ fun ListItem(
             )
             .clickable { onClick.invoke(categoryDto.name) },
         elevation = 6.dp,
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        backgroundColor = CustomTheme.themeColors.surface
     ) {
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 16.dp)
+        ) {
             AsyncImage(
-                modifier = Modifier.padding(vertical = 12.dp),
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(categoryDto.photoUrl)
                     .crossfade(true)
@@ -124,24 +132,26 @@ fun ListItem(
                     .diskCachePolicy(CachePolicy.ENABLED)
                     .build(),
                 contentDescription = null,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
             Column(
                 modifier = Modifier
                     .padding(
                         start = 16.dp,
-                        end = 24.dp,
-                        top = 16.dp,
-                        bottom = 16.dp
+                        end = 24.dp
                     )
             ) {
                 Text(
-                    text = categoryDto.name
+                    text = categoryDto.name,
+                    color = CustomTheme.themeColors.onSurface,
+                    style = CustomTheme.themeTypography.cardTitle
                 )
                 Text(
                     text = categoryDto.description,
                     maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    color = CustomTheme.themeColors.onSurface,
+                    style = CustomTheme.themeTypography.cardSubtitle
                 )
             }
         }
@@ -153,9 +163,11 @@ private fun CircularProgressBar(screenState: CategoriesScreenState) {
     if (screenState.isLoading) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                color = CustomTheme.themeColors.primary
+            )
         }
     }
 }

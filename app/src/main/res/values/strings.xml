@@ -12,4 +12,12 @@
     <string name="settings_title">Settings</string>
     <string name="favorites_title">Favorites</string>
     <string name="recipe_title">Recipe</string>
+
+    <!-- Settings -->
+    <string name="dark_mode">Dark Mode</string>
+    <string name="color_palette">Color Palette</string>
+    <string name="font_size">Font Size</string>
+    <string name="font_big">Big</string>
+    <string name="font_medium">Medium</string>
+    <string name="font_small">Small</string>
 </resources>

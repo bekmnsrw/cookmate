@@ -24,6 +24,7 @@ import com.example.cookmate.presentation.recipes.categories.CategoriesScreen
 import com.example.cookmate.presentation.recipes.details.RecipeScreen
 import com.example.cookmate.presentation.recipes.dishes.DishesScreen
 import com.example.cookmate.presentation.settings.SettingsScreen
+import com.example.cookmate.ui.custom.CustomTheme
 
 sealed class BottomNavigationItem(
     val route: String,
@@ -76,7 +77,8 @@ fun NavigationHost(
     Scaffold(
         bottomBar = {
             BottomNavigation(
-
+                backgroundColor = CustomTheme.themeColors.primary,
+                contentColor = CustomTheme.themeColors.onPrimary
             ) {
                 val navBackStackEntry by navHostController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
@@ -84,11 +86,18 @@ fun NavigationHost(
                 items.forEach { screen ->
                     BottomNavigationItem(
                         icon = { Icon(screen.icon, contentDescription = null) },
-                        label = { Text(stringResource(id = screen.name)) },
+                        label = {
+                            Text(
+                                stringResource(id = screen.name),
+                                style = CustomTheme.themeTypography.cardSubtitle
+                            )
+                        },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             navHostController.navigate(screen.route) {
-                                popUpTo(navHostController.graph.findStartDestination().id) { saveState = true }
+                                popUpTo(navHostController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
                                 launchSingleTop = true
                                 restoreState = true
                             }

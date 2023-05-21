@@ -1,13 +1,11 @@
 package com.example.cookmate.presentation.recipes.dishes
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,6 +26,7 @@ import coil.size.Scale
 import com.example.cookmate.R
 import com.example.cookmate.Screen
 import com.example.cookmate.domain.dtos.MealDto
+import com.example.cookmate.ui.custom.CustomTheme
 
 @Composable
 fun DishesScreen(
@@ -79,7 +78,10 @@ fun DishesList(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CustomTheme.themeColors.background)
     ) {
         items(
             screenState.dishes.size
@@ -102,7 +104,8 @@ fun ListItem(
 
     Card(
         elevation = 6.dp,
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        backgroundColor = CustomTheme.themeColors.surface
     ) {
         Column {
             AsyncImage(
@@ -123,13 +126,20 @@ fun ListItem(
                 Text(
                     text = mealDto.name,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    color = CustomTheme.themeColors.onSurface,
+                    style = CustomTheme.themeTypography.cardTitle
                 )
                 Button(
                     onClick = { onClick.invoke(mealDto.id) },
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = CustomTheme.themeColors.primary)
                 ) {
-                    Text(text = stringResource(id = R.string.recipe_title))
+                    Text(
+                        text = stringResource(id = R.string.recipe_title),
+                        color = CustomTheme.themeColors.onPrimary,
+                        style = CustomTheme.themeTypography.buttonText
+                    )
                 }
             }
         }
@@ -143,7 +153,9 @@ private fun CircularProgressBar(screenState: DishesScreenState) {
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                color = CustomTheme.themeColors.primary
+            )
         }
     }
 }
