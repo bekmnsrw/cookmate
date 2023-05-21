@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.List
+import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +34,7 @@ sealed class BottomNavigationItem(
     object Recipes : BottomNavigationItem(
         route = "recipes",
         name = R.string.screen_recipes,
-        icon = Icons.Rounded.List
+        icon = Icons.Rounded.MenuBook
     )
 
     object Favorites : BottomNavigationItem(
