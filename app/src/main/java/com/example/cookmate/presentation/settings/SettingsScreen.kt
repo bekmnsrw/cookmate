@@ -38,19 +38,10 @@ fun SettingsContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(CustomTheme.themeColors.background)
-            .padding(horizontal = 16.dp),
+            .background(CustomTheme.themeColors.background),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-
-        item {
-            Text(
-                text = stringResource(id = R.string.settings_title),
-                color = CustomTheme.themeColors.onBackground,
-                style = CustomTheme.themeTypography.screenHeading,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-        }
         item {
             DarkModeCard(
                 currentSettings = currentSettings,

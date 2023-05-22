@@ -62,59 +62,35 @@ fun DishesContent(
 
     DishesList(
         screenState = screenState,
-        navController = navController,
-        categoryName = categoryName
+        navController = navController
     )
 }
 
 @Composable
 fun DishesList(
     screenState: DishesScreenState,
-    navController: NavController,
-    categoryName: String
+    navController: NavController
 ) {
     val dishes = screenState.dishes
 
-    Column(
-        modifier = Modifier.background(CustomTheme.themeColors.background)
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CustomTheme.themeColors.background)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(CustomTheme.themeColors.primary),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { navController.navigateUp() }) {
-                Icon(
-                    imageVector = Icons.Rounded.ArrowBack,
-                    contentDescription = null,
-                    tint = CustomTheme.themeColors.onPrimary,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-            Text(
-                text = categoryName,
-                color = CustomTheme.themeColors.onPrimary,
-                style = CustomTheme.themeTypography.screenHeading,
-            )
-        }
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(screenState.dishes.size) {
-                ListItem(mealDto = dishes[it]) { mealId ->
-                    navController.navigate(Screen.Recipe.createRoute(mealId))
-                }
+        items(screenState.dishes.size) {
+            ListItem(mealDto = dishes[it]) { mealId ->
+                navController.navigate(Screen.Recipe.createRoute(mealId))
             }
         }
-        CircularProgressBar(
-            screenState = screenState
-        )
     }
+    CircularProgressBar(
+        screenState = screenState
+    )
 }
 
 @Composable

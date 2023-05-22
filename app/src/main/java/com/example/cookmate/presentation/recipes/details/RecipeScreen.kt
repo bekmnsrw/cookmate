@@ -38,8 +38,7 @@ fun RecipeScreen(
     RecipeContent(
         screenState = state.value,
         eventHandler = viewModel::eventHandler,
-        dishId = dishId,
-        navController = navController
+        dishId = dishId
     )
 }
 
@@ -47,8 +46,7 @@ fun RecipeScreen(
 fun RecipeContent(
     screenState: RecipeScreenState,
     eventHandler: (RecipeScreenEvent) -> Unit,
-    dishId: String,
-    navController: NavController
+    dishId: String
 ) {
     if (!screenState.isLoaded) {
         LaunchedEffect(Unit) {
@@ -57,108 +55,89 @@ fun RecipeContent(
     }
 
     RecipeInfo(
-        screenState = screenState,
-        navController = navController
+        screenState = screenState
     )
 }
 
 @Composable
 fun RecipeInfo(
-    screenState: RecipeScreenState,
-    navController: NavController
+    screenState: RecipeScreenState
 ) {
     val recipe = screenState.recipe
 
-    Column(
-        modifier = Modifier.background(CustomTheme.themeColors.background)
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CustomTheme.themeColors.background)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(CustomTheme.themeColors.primary),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { navController.navigateUp() }) {
-                Icon(
-                    imageVector = Icons.Rounded.ArrowBack,
+        item {
+            if (recipe != null) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(recipe.photoUrl)
+                        .crossfade(true)
+                        .placeholder(R.drawable.placeholder)
+                        .error(R.drawable.placeholder)
+                        .scale(Scale.FILL)
+                        .diskCachePolicy(CachePolicy.ENABLED)
+                        .build(),
                     contentDescription = null,
-                    tint = CustomTheme.themeColors.onPrimary,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.Crop
                 )
-            }
-        }
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            item {
-                if (recipe != null) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(recipe.photoUrl)
-                            .crossfade(true)
-                            .placeholder(R.drawable.placeholder)
-                            .error(R.drawable.placeholder)
-                            .scale(Scale.FILL)
-                            .diskCachePolicy(CachePolicy.ENABLED)
-                            .build(),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxWidth(),
-                        contentScale = ContentScale.Crop
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = recipe.name,
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        color = CustomTheme.themeColors.onBackground,
+                        style = CustomTheme.themeTypography.screenHeading
                     )
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = recipe.name,
-                            modifier = Modifier.padding(bottom = 16.dp),
-                            color = CustomTheme.themeColors.onBackground,
-                            style = CustomTheme.themeTypography.screenHeading
-                        )
-                        Row {
-                            Icon(
-                                imageVector = Icons.Rounded.RestaurantMenu,
-                                contentDescription = null,
-                                modifier = Modifier.padding(end = 8.dp),
-                                tint = CustomTheme.themeColors.primary
-                            )
-                            Text(
-                                text = recipe.category,
-                                color = CustomTheme.themeColors.onBackground,
-                                style = CustomTheme.themeTypography.title
-                            )
-                        }
-                        Row(
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Public,
-                                contentDescription = null,
-                                modifier = Modifier.padding(end = 8.dp),
-                                tint = CustomTheme.themeColors.primary
-                            )
-                            Text(
-                                text = recipe.country,
-                                color = CustomTheme.themeColors.onBackground,
-                                style = CustomTheme.themeTypography.title,
-                            )
-                        }
-                        Divider(
-                            color = CustomTheme.themeColors.primary
+                    Row {
+                        Icon(
+                            imageVector = Icons.Rounded.RestaurantMenu,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 8.dp),
+                            tint = CustomTheme.themeColors.primary
                         )
                         Text(
-                            text = recipe.instructions,
-                            modifier = Modifier.padding(top = 16.dp),
+                            text = recipe.category,
                             color = CustomTheme.themeColors.onBackground,
-                            style = CustomTheme.themeTypography.subtitle
+                            style = CustomTheme.themeTypography.title
                         )
                     }
+                    Row(
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Public,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 8.dp),
+                            tint = CustomTheme.themeColors.primary
+                        )
+                        Text(
+                            text = recipe.country,
+                            color = CustomTheme.themeColors.onBackground,
+                            style = CustomTheme.themeTypography.title,
+                        )
+                    }
+                    Divider(
+                        color = CustomTheme.themeColors.primary
+                    )
+                    Text(
+                        text = recipe.instructions,
+                        modifier = Modifier.padding(top = 16.dp),
+                        color = CustomTheme.themeColors.onBackground,
+                        style = CustomTheme.themeTypography.subtitle
+                    )
                 }
             }
         }
-        CircularProgressBar(
-            screenState = screenState
-        )
     }
+    CircularProgressBar(
+        screenState = screenState
+    )
 }
 
 @Composable

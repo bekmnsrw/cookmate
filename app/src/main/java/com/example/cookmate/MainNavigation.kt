@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Settings
@@ -12,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -64,7 +66,6 @@ sealed class Screen(val route: String) {
 
 @Composable
 fun NavigationHost(
-    modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
     startDestination: BottomNavigationItem = BottomNavigationItem.Recipes
 ) {
@@ -105,6 +106,28 @@ fun NavigationHost(
                     )
                 }
             }
+        },
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = { navHostController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = null,
+                            tint = CustomTheme.themeColors.onPrimary,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
+                },
+                backgroundColor = CustomTheme.themeColors.primary,
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.top_app_bar_title),
+                        color = CustomTheme.themeColors.onPrimary,
+                        style = CustomTheme.themeTypography.screenHeading
+                    )
+                }
+            )
         }
     ) { innerPadding ->
         NavHost(

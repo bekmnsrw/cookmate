@@ -42,8 +42,8 @@ fun Theme(
         screenHeading = TextStyle(
             fontSize = when (textSize) {
                 SMALL -> 24.sp
-                MEDIUM -> 28.sp
-                BIG -> 32.sp
+                MEDIUM -> 26.sp
+                BIG -> 28.sp
             },
             fontWeight = FontWeight.Bold
         ),

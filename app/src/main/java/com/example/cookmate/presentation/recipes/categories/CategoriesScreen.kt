@@ -71,40 +71,25 @@ fun CategoriesList(
     screenState: CategoriesScreenState,
     navController: NavController
 ) {
-    Column(
-        modifier = Modifier.background(CustomTheme.themeColors.background)
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CustomTheme.themeColors.background),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Text(
-            text = stringResource(id = R.string.categories_title),
-            color = CustomTheme.themeColors.onPrimary,
-            style = CustomTheme.themeTypography.screenHeading,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(CustomTheme.themeColors.primary)
-                .padding(
-                    start = 16.dp,
-                    top = 5.dp,
-                    bottom = 5.dp
-                )
-        )
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+        items(
+            screenState.categories,
+            key = { it.id }
         ) {
-            items(
-                screenState.categories,
-                key = { it.id }
-            ) {
-                ListItem(categoryDto = it) { categoryName ->
-                    navController.navigate(Screen.Dishes.createRoute(categoryName))
-                }
+            ListItem(categoryDto = it) { categoryName ->
+                navController.navigate(Screen.Dishes.createRoute(categoryName))
             }
         }
-        CircularProgressBar(
-            screenState = screenState
-        )
     }
+    CircularProgressBar(
+        screenState = screenState
+    )
 }
 
 @Composable
