@@ -6,34 +6,38 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.cookmate.LocalSettingsEventBus
 import com.example.cookmate.R
 import com.example.cookmate.ui.custom.*
-import com.example.cookmate.ui.custom.baseDarkPalette
-import com.example.cookmate.ui.custom.baseLightPalette
 
 @Composable
 fun SettingsScreen(
     navController: NavController,
     viewModel: SettingsEventBus = hiltViewModel()
 ) {
+    val currentSettingsState = viewModel.currentSettings.collectAsStateWithLifecycle()
     val settingsEventBus = LocalSettingsEventBus.current
-    val currentSettings = settingsEventBus.currentSettings.collectAsState().value
 
-    SettingsContent(currentSettings, settingsEventBus)
+    SettingsContent(
+        settingsEventBus,
+        currentSettingsState.value,
+        viewModel::eventHandler
+    )
 }
 
 @Composable
 fun SettingsContent(
-    currentSettings: CurrentSettings,
-    settingsEventBus: SettingsEventBus
+    settingsEventBus: SettingsEventBus,
+    currentSettingsState: CurrentSettings,
+    eventHandler: (SettingsScreenEvent) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -44,20 +48,23 @@ fun SettingsContent(
     ) {
         item {
             DarkModeCard(
-                currentSettings = currentSettings,
-                settingsEventBus = settingsEventBus
+                settingsEventBus = settingsEventBus,
+                currentSettingsState = currentSettingsState,
+                eventHandler = eventHandler
             )
         }
         item {
             ColorPaletteCard(
-                currentSettings = currentSettings,
-                settingsEventBus = settingsEventBus
+                currentSettingsState = currentSettingsState,
+                settingsEventBus = settingsEventBus,
+                eventHandler = eventHandler
             )
         }
         item {
             FontSizeCard(
-                currentSettings = currentSettings,
-                settingsEventBus = settingsEventBus
+                currentSettingsState = currentSettingsState,
+                settingsEventBus = settingsEventBus,
+                eventHandler = eventHandler
             )
         }
     }
@@ -65,8 +72,9 @@ fun SettingsContent(
 
 @Composable
 fun DarkModeCard(
-    currentSettings: CurrentSettings,
-    settingsEventBus: SettingsEventBus
+    settingsEventBus: SettingsEventBus,
+    currentSettingsState: CurrentSettings,
+    eventHandler: (SettingsScreenEvent) -> Unit
 ) {
     Card(
         backgroundColor = CustomTheme.themeColors.surface,
@@ -89,9 +97,14 @@ fun DarkModeCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Switch(
-                    checked = currentSettings.isDarkMode,
+                    checked = currentSettingsState.isDarkMode,
                     onCheckedChange = {
-                        settingsEventBus.updateDarkMode(!currentSettings.isDarkMode)
+                        settingsEventBus.eventHandler(
+                            SettingsScreenEvent.UpdateDarkMode(!currentSettingsState.isDarkMode)
+                        )
+                        eventHandler.invoke(
+                            SettingsScreenEvent.UpdateDarkMode(!currentSettingsState.isDarkMode)
+                        )
                     },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = CustomTheme.themeColors.onPrimary,
@@ -107,8 +120,9 @@ fun DarkModeCard(
 
 @Composable
 fun ColorPaletteCard(
-    currentSettings: CurrentSettings,
-    settingsEventBus: SettingsEventBus
+    currentSettingsState: CurrentSettings,
+    settingsEventBus: SettingsEventBus,
+    eventHandler: (SettingsScreenEvent) -> Unit
 ) {
     Card(
         backgroundColor = CustomTheme.themeColors.surface,
@@ -132,16 +146,22 @@ fun ColorPaletteCard(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 ColorCard(
-                    color = if (currentSettings.isDarkMode) baseDarkPalette.primary else baseLightPalette.primary,
-                    onClick = { settingsEventBus.updateStyle(ThemePaletteColors.GREEN) }
+                    color = if (currentSettingsState.isDarkMode) baseDarkPalette.primary else baseLightPalette.primary,
+                    settingsEventBus = settingsEventBus,
+                    colorPalette = ThemePaletteColors.GREEN,
+                    eventHandler = eventHandler
                 )
                 ColorCard(
-                    color = if (currentSettings.isDarkMode) purpleDarkPalette.primary else purpleLightPalette.primary,
-                    onClick = { settingsEventBus.updateStyle(ThemePaletteColors.PURPLE) }
+                    color = if (currentSettingsState.isDarkMode) purpleDarkPalette.primary else purpleLightPalette.primary,
+                    settingsEventBus = settingsEventBus,
+                    colorPalette = ThemePaletteColors.PURPLE,
+                    eventHandler = eventHandler
                 )
                 ColorCard(
-                    color = if (currentSettings.isDarkMode) pinkDarkPalette.primary else pinkLightPalette.primary,
-                    onClick = { settingsEventBus.updateStyle(ThemePaletteColors.PINK) }
+                    color = if (currentSettingsState.isDarkMode) pinkDarkPalette.primary else pinkLightPalette.primary,
+                    settingsEventBus = settingsEventBus,
+                    colorPalette = ThemePaletteColors.PINK,
+                    eventHandler = eventHandler
                 )
             }
         }
@@ -152,21 +172,31 @@ fun ColorPaletteCard(
 @Composable
 private fun ColorCard(
     color: Color,
-    onClick: () -> Unit
+    settingsEventBus: SettingsEventBus,
+    colorPalette: ThemePaletteColors,
+    eventHandler: (SettingsScreenEvent) -> Unit
 ) {
     Card(
-        onClick = { onClick() },
         modifier = Modifier.size(56.dp, 56.dp),
         backgroundColor = color,
         elevation = 6.dp,
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        onClick = {
+            settingsEventBus.eventHandler(
+                SettingsScreenEvent.UpdateColorPalette(colorPalette)
+            )
+            eventHandler.invoke(
+                SettingsScreenEvent.UpdateColorPalette(colorPalette)
+            )
+        }
     ) {}
 }
 
 @Composable
 fun FontSizeCard(
-    currentSettings: CurrentSettings,
-    settingsEventBus: SettingsEventBus
+    currentSettingsState: CurrentSettings,
+    settingsEventBus: SettingsEventBus,
+    eventHandler: (SettingsScreenEvent) -> Unit
 ) {
     Card(
         backgroundColor = CustomTheme.themeColors.surface,
@@ -192,19 +222,25 @@ fun FontSizeCard(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 CustomRadioButton(
-                    isSelected = currentSettings.textSize == ThemeSizes.BIG,
-                    onClick = { settingsEventBus.updateFontSize(ThemeSizes.BIG) },
-                    label = stringResource(id = R.string.font_big)
+                    label = stringResource(id = R.string.font_big),
+                    currentSettingsState = currentSettingsState,
+                    themeSizes = ThemeSizes.BIG,
+                    settingsEventBus = settingsEventBus,
+                    eventHandler = eventHandler
                 )
                 CustomRadioButton(
-                    isSelected = currentSettings.textSize == ThemeSizes.MEDIUM,
-                    onClick = { settingsEventBus.updateFontSize(ThemeSizes.MEDIUM) },
-                    label = stringResource(id = R.string.font_medium)
+                    label = stringResource(id = R.string.font_medium),
+                    currentSettingsState = currentSettingsState,
+                    themeSizes = ThemeSizes.MEDIUM,
+                    settingsEventBus = settingsEventBus,
+                    eventHandler = eventHandler
                 )
                 CustomRadioButton(
-                    isSelected = currentSettings.textSize == ThemeSizes.SMALL,
-                    onClick = { settingsEventBus.updateFontSize(ThemeSizes.SMALL) },
-                    label = stringResource(id = R.string.font_small)
+                    label = stringResource(id = R.string.font_small),
+                    currentSettingsState = currentSettingsState,
+                    themeSizes = ThemeSizes.SMALL,
+                    settingsEventBus = settingsEventBus,
+                    eventHandler = eventHandler
                 )
             }
         }
@@ -212,21 +248,30 @@ fun FontSizeCard(
 }
 
 @Composable
-fun CustomRadioButton(
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    label: String
+private fun CustomRadioButton(
+    label: String,
+    currentSettingsState: CurrentSettings,
+    themeSizes: ThemeSizes,
+    settingsEventBus: SettingsEventBus,
+    eventHandler: (SettingsScreenEvent) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
-            selected = isSelected,
-            onClick = { onClick() },
+            selected = currentSettingsState.fontSize == themeSizes,
             colors = RadioButtonDefaults.colors(
                 selectedColor = CustomTheme.themeColors.primary,
                 unselectedColor = CustomTheme.themeColors.outline
-            )
+            ),
+            onClick = {
+                settingsEventBus.eventHandler(
+                    SettingsScreenEvent.UpdateFontSize(themeSizes)
+                )
+                eventHandler.invoke(
+                    SettingsScreenEvent.UpdateFontSize(themeSizes)
+                )
+            }
         )
         Text(
             text = label,

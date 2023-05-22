@@ -1,7 +1,6 @@
 package com.example.cookmate.presentation.settings
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cookmate.ui.custom.ThemePaletteColors
@@ -45,7 +44,6 @@ class SettingsEventBus @Inject constructor() : ViewModel() {
         _currentSettings.emit(_currentSettings.value.copy(fontSize = fontSize))
     }
 }
-
 
 @Immutable
 data class CurrentSettings(

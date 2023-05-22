@@ -1,21 +1,21 @@
 package com.example.cookmate.presentation.recipes.categories
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,6 +28,10 @@ import com.example.cookmate.R
 import com.example.cookmate.Screen
 import com.example.cookmate.domain.dtos.CategoryDto
 import com.example.cookmate.ui.custom.CustomTheme
+import com.example.cookmate.utils.ErrorType
+import com.example.cookmate.utils.handleError
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun CategoriesScreen(
@@ -52,7 +56,7 @@ fun CategoriesContent(
     screenState: CategoriesScreenState,
     navController: NavController
 ) {
-
+    // sacffold
     CategoriesList(screenState, navController)
 }
 
@@ -62,7 +66,12 @@ private fun CategoriesScreenActions(
 ) {
     when (screenAction) {
         null -> Unit
-        is CategoriesScreenAction.ShowError -> TODO()
+        is CategoriesScreenAction.ShowError -> {
+            ErrorSnackbar(
+                errorType = screenAction.errorType,
+                LocalContext.current
+            )
+        }
     }
 }
 
@@ -154,6 +163,51 @@ private fun CircularProgressBar(screenState: CategoriesScreenState) {
             CircularProgressIndicator(
                 color = CustomTheme.themeColors.primary
             )
+        }
+    }
+}
+
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun ErrorSnackbar(
+    errorType: ErrorType,
+    context: Context
+) {
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+        snackbarHost = {
+            SnackbarHost(hostState = it) { data ->
+                Snackbar(
+                    actionColor = CustomTheme.themeColors.primary,
+                    snackbarData = data
+                )
+            }
+        }
+    ) {
+        val handledError: Pair<String, String> = handleError(errorType)
+
+        LaunchedEffect(Unit) {
+            coroutineScope.launch {
+                val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                    message = handledError.first,
+                    actionLabel = handledError.second,
+                    duration = SnackbarDuration.Long
+                )
+                when (snackbarResult) {
+                    SnackbarResult.Dismissed -> {}
+                    SnackbarResult.ActionPerformed -> {
+                        when (errorType) {
+                            ErrorType.NO_INTERNET_CONNECTION -> {
+                                context.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+                            }
+                            ErrorType.OTHER -> {}
+                        }
+                    }
+                }
+            }
         }
     }
 }
