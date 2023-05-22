@@ -27,10 +27,6 @@ class CategoriesViewModel @Inject constructor(
     private val _action = MutableSharedFlow<CategoriesScreenAction?>()
     val action: SharedFlow<CategoriesScreenAction?> = _action.asSharedFlow()
 
-    init {
-        eventHandler(CategoriesScreenEvent.LoadCategories)
-    }
-
     fun eventHandler(event: CategoriesScreenEvent) {
         when (event) {
             is CategoriesScreenEvent.LoadCategories -> loadCategories()

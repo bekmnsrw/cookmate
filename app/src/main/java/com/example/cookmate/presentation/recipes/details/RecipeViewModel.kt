@@ -5,10 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cookmate.domain.dtos.MealDetailsDto
 import com.example.cookmate.domain.usecases.GetMealDetailsUseCase
+import com.example.cookmate.utils.ErrorType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,13 +35,17 @@ class RecipeViewModel @Inject constructor(
             .onStart { _state.emit(_state.value.copy(isLoading = true)) }
             .onCompletion { _state.emit(_state.value.copy(isLoading = false)) }
             .catch {
-                _action.emit(RecipeScreenAction.ShowError)
                 _state.emit(_state.value.copy(error = it))
+                when (it) {
+                    is UnknownHostException -> {
+                        _action.emit(RecipeScreenAction.ShowError(ErrorType.NO_INTERNET_CONNECTION))
+                    }
+                    else -> {
+                        _action.emit(RecipeScreenAction.ShowError(ErrorType.OTHER))
+                    }
+                }
             }
-            .collect {
-                _state.emit(_state.value.copy(recipe = it))
-                _state.emit(_state.value.copy(isLoaded = true))
-            }
+            .collect { _state.emit(_state.value.copy(recipe = it)) }
     }
 }
 
@@ -47,8 +53,7 @@ class RecipeViewModel @Inject constructor(
 data class RecipeScreenState(
     val isLoading: Boolean = false,
     val recipe: MealDetailsDto? = null,
-    val error: Throwable? = null,
-    val isLoaded: Boolean = false
+    val error: Throwable? = null
 )
 
 @Immutable
@@ -58,5 +63,5 @@ sealed interface RecipeScreenEvent {
 
 @Immutable
 sealed interface RecipeScreenAction {
-    object ShowError : RecipeScreenAction
+    data class ShowError(val errorType: ErrorType) : RecipeScreenAction
 }

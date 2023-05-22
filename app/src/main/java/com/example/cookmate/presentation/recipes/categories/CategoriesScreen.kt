@@ -16,9 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -41,36 +45,93 @@ fun CategoriesScreen(
     val state = viewModel.state.collectAsStateWithLifecycle()
     val action by viewModel.action.collectAsStateWithLifecycle(initialValue = null)
 
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+
     CategoriesContent(
         screenState = state.value,
-        navController = navController
+        navController = navController,
+        scaffoldState = scaffoldState,
+        eventHandler = viewModel::eventHandler
     )
 
     CategoriesScreenActions(
-        screenAction = action
+        screenAction = action,
+        scaffoldState = scaffoldState,
+        coroutineScope = coroutineScope,
+        context = LocalContext.current
     )
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun CategoriesContent(
     screenState: CategoriesScreenState,
-    navController: NavController
+    navController: NavController,
+    scaffoldState: ScaffoldState,
+    eventHandler: (CategoriesScreenEvent) -> Unit
 ) {
-    // sacffold
-    CategoriesList(screenState, navController)
+    val lifecycleOwner = rememberLifecycleEvent()
+
+    LaunchedEffect(lifecycleOwner) {
+        if (lifecycleOwner == Lifecycle.Event.ON_RESUME) {
+            if (screenState.categories.isEmpty()) {
+                eventHandler.invoke(CategoriesScreenEvent.LoadCategories)
+            }
+        }
+    }
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+        snackbarHost = {
+            SnackbarHost(hostState = it) { data ->
+                Snackbar(
+                    actionColor = CustomTheme.themeColors.primary,
+                    snackbarData = data
+                )
+            }
+        }
+    ) {
+        CategoriesList(
+            screenState = screenState,
+            navController = navController
+        )
+    }
 }
 
 @Composable
 private fun CategoriesScreenActions(
-    screenAction: CategoriesScreenAction?
+    screenAction: CategoriesScreenAction?,
+    scaffoldState: ScaffoldState,
+    coroutineScope: CoroutineScope,
+    context: Context
 ) {
     when (screenAction) {
         null -> Unit
         is CategoriesScreenAction.ShowError -> {
-            ErrorSnackbar(
-                errorType = screenAction.errorType,
-                LocalContext.current
-            )
+            val errorType: ErrorType = screenAction.errorType
+            val handledError: Pair<String, String> = handleError(errorType)
+
+            LaunchedEffect(Unit) {
+                coroutineScope.launch {
+                    val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                        message = handledError.first,
+                        actionLabel = handledError.second,
+                        duration = SnackbarDuration.Long
+                    )
+                    when (snackbarResult) {
+                        SnackbarResult.Dismissed -> {}
+                        SnackbarResult.ActionPerformed -> {
+                            when (errorType) {
+                                ErrorType.NO_INTERNET_CONNECTION -> {
+                                    context.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+                                }
+                                ErrorType.OTHER -> {}
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -167,47 +228,13 @@ private fun CircularProgressBar(screenState: CategoriesScreenState) {
     }
 }
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun ErrorSnackbar(
-    errorType: ErrorType,
-    context: Context
-) {
-    val scaffoldState: ScaffoldState = rememberScaffoldState()
-    val coroutineScope: CoroutineScope = rememberCoroutineScope()
-
-    Scaffold(
-        scaffoldState = scaffoldState,
-        snackbarHost = {
-            SnackbarHost(hostState = it) { data ->
-                Snackbar(
-                    actionColor = CustomTheme.themeColors.primary,
-                    snackbarData = data
-                )
-            }
-        }
-    ) {
-        val handledError: Pair<String, String> = handleError(errorType)
-
-        LaunchedEffect(Unit) {
-            coroutineScope.launch {
-                val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
-                    message = handledError.first,
-                    actionLabel = handledError.second,
-                    duration = SnackbarDuration.Long
-                )
-                when (snackbarResult) {
-                    SnackbarResult.Dismissed -> {}
-                    SnackbarResult.ActionPerformed -> {
-                        when (errorType) {
-                            ErrorType.NO_INTERNET_CONNECTION -> {
-                                context.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
-                            }
-                            ErrorType.OTHER -> {}
-                        }
-                    }
-                }
-            }
-        }
+fun rememberLifecycleEvent(lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current): Lifecycle.Event {
+    var state by remember { mutableStateOf(Lifecycle.Event.ON_ANY) }
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event -> state = event }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
+    return state
 }

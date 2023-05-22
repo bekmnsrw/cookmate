@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cookmate.domain.dtos.MealDto
 import com.example.cookmate.domain.usecases.GetMealsByCategoryUseCase
+import com.example.cookmate.utils.ErrorType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -12,6 +13,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,7 +29,7 @@ class DishesViewModel @Inject constructor(
 
     fun eventHandler(event: DishesScreenEvent) {
         when (event) {
-            is DishesScreenEvent.LoadingDishes -> loadDishes(event.categoryName)
+            is DishesScreenEvent.LoadDishes -> loadDishes(event.categoryName)
         }
     }
 
@@ -36,13 +38,17 @@ class DishesViewModel @Inject constructor(
             .onStart { _state.emit(_state.value.copy(isLoading = true)) }
             .onCompletion { _state.emit(_state.value.copy(isLoading = false)) }
             .catch {
-                _action.emit(DishesScreenAction.ShowError)
                 _state.emit(_state.value.copy(error = it))
+                when (it) {
+                    is UnknownHostException -> {
+                        _action.emit(DishesScreenAction.ShowError(ErrorType.NO_INTERNET_CONNECTION))
+                    }
+                    else -> {
+                        _action.emit(DishesScreenAction.ShowError(ErrorType.OTHER))
+                    }
+                }
             }
-            .collect {
-                _state.emit(_state.value.copy(dishes = it.toPersistentList()))
-                _state.emit(_state.value.copy(isLoaded = true))
-            }
+            .collect { _state.emit(_state.value.copy(dishes = it.toPersistentList())) }
     }
 }
 
@@ -50,16 +56,15 @@ class DishesViewModel @Inject constructor(
 data class DishesScreenState(
     val isLoading: Boolean = false,
     val dishes: PersistentList<MealDto> = persistentListOf(),
-    val error: Throwable? = null,
-    val isLoaded: Boolean = false
+    val error: Throwable? = null
 )
 
 @Immutable
 sealed interface DishesScreenEvent {
-    data class LoadingDishes(val categoryName: String) : DishesScreenEvent
+    data class LoadDishes(val categoryName: String) : DishesScreenEvent
 }
 
 @Immutable
 sealed interface DishesScreenAction {
-    object ShowError : DishesScreenAction
+    data class ShowError(val errorType: ErrorType) : DishesScreenAction
 }
