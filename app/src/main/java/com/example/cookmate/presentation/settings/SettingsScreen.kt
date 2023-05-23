@@ -8,7 +8,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -146,22 +145,22 @@ fun ColorPaletteCard(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 ColorCard(
-                    color = if (currentSettingsState.isDarkMode) baseDarkPalette.primary else baseLightPalette.primary,
                     settingsEventBus = settingsEventBus,
                     colorPalette = ThemePaletteColors.GREEN,
-                    eventHandler = eventHandler
+                    eventHandler = eventHandler,
+                    currentSettingsState = currentSettingsState
                 )
                 ColorCard(
-                    color = if (currentSettingsState.isDarkMode) purpleDarkPalette.primary else purpleLightPalette.primary,
                     settingsEventBus = settingsEventBus,
                     colorPalette = ThemePaletteColors.PURPLE,
-                    eventHandler = eventHandler
+                    eventHandler = eventHandler,
+                    currentSettingsState = currentSettingsState
                 )
                 ColorCard(
-                    color = if (currentSettingsState.isDarkMode) pinkDarkPalette.primary else pinkLightPalette.primary,
                     settingsEventBus = settingsEventBus,
                     colorPalette = ThemePaletteColors.PINK,
-                    eventHandler = eventHandler
+                    eventHandler = eventHandler,
+                    currentSettingsState = currentSettingsState
                 )
             }
         }
@@ -171,14 +170,26 @@ fun ColorPaletteCard(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ColorCard(
-    color: Color,
     settingsEventBus: SettingsEventBus,
     colorPalette: ThemePaletteColors,
-    eventHandler: (SettingsScreenEvent) -> Unit
+    eventHandler: (SettingsScreenEvent) -> Unit,
+    currentSettingsState: CurrentSettings
 ) {
     Card(
         modifier = Modifier.size(56.dp, 56.dp),
-        backgroundColor = color,
+        backgroundColor = if (currentSettingsState.isDarkMode) {
+            when (colorPalette) {
+                ThemePaletteColors.GREEN -> baseDarkPalette.primary
+                ThemePaletteColors.PURPLE -> purpleDarkPalette.primary
+                ThemePaletteColors.PINK -> pinkDarkPalette.primary
+            }
+        } else {
+            when (colorPalette) {
+                ThemePaletteColors.GREEN -> baseLightPalette.primary
+                ThemePaletteColors.PURPLE -> purpleLightPalette.primary
+                ThemePaletteColors.PINK -> pinkLightPalette.primary
+            }
+        },
         elevation = 6.dp,
         shape = RoundedCornerShape(8.dp),
         onClick = {
