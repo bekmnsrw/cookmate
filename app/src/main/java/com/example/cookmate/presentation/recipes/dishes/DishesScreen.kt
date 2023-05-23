@@ -78,10 +78,8 @@ fun DishesContent(
     val lifecycleOwner = rememberLifecycleEvent()
 
     LaunchedEffect(lifecycleOwner) {
-        if (lifecycleOwner == Lifecycle.Event.ON_RESUME) {
-            if (screenState.dishes.isEmpty()) {
-                eventHandler.invoke(DishesScreenEvent.LoadDishes(categoryName))
-            }
+        if (lifecycleOwner == Lifecycle.Event.ON_RESUME && screenState.dishes.isEmpty()) {
+            eventHandler.invoke(DishesScreenEvent.LoadDishes(categoryName))
         }
     }
 

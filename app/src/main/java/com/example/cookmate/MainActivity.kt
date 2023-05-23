@@ -24,8 +24,8 @@ class MainActivity : ComponentActivity() {
             val currentSettings = settingsEventBus.currentSettings.collectAsState().value
 
             Theme(
-                style = currentSettings.colorPalette,
-                textSize = currentSettings.fontSize,
+                colorPalette = currentSettings.colorPalette,
+                fontSize = currentSettings.fontSize,
                 darkTheme = currentSettings.isDarkMode,
             ) {
                 CompositionLocalProvider(

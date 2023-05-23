@@ -77,57 +77,13 @@ fun NavigationHost(
 
     Scaffold(
         bottomBar = {
-            BottomNavigation(
-                backgroundColor = CustomTheme.themeColors.primary,
-                contentColor = CustomTheme.themeColors.onPrimary
-            ) {
-                val navBackStackEntry by navHostController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-
-                items.forEach { screen ->
-                    BottomNavigationItem(
-                        icon = { Icon(screen.icon, contentDescription = null) },
-                        label = {
-                            Text(
-                                stringResource(id = screen.name),
-                                style = CustomTheme.themeTypography.bottomNavigationText
-                            )
-                        },
-                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                        onClick = {
-                            navHostController.navigate(screen.route) {
-                                popUpTo(navHostController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                    )
-                }
-            }
+            CustomBottomAppBar(
+                navHostController = navHostController,
+                bottomNavigationItems = items
+            )
         },
         topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = { navHostController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.Rounded.ArrowBack,
-                            contentDescription = null,
-                            tint = CustomTheme.themeColors.onPrimary,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-                    }
-                },
-                backgroundColor = CustomTheme.themeColors.primary,
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.top_app_bar_title),
-                        color = CustomTheme.themeColors.onPrimary,
-                        style = CustomTheme.themeTypography.screenHeading
-                    )
-                }
-            )
+            CustomTopAppBar(navHostController)
         }
     ) { innerPadding ->
         NavHost(
@@ -151,6 +107,68 @@ fun NavigationHost(
                     it.arguments?.getString("dishId").toString()
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun CustomTopAppBar(
+    navHostController: NavHostController
+) {
+    TopAppBar(
+        backgroundColor = CustomTheme.themeColors.primary,
+        navigationIcon = {
+            IconButton(onClick = { navHostController.navigateUp() }) {
+                Icon(
+                    imageVector = Icons.Rounded.ArrowBack,
+                    contentDescription = null,
+                    tint = CustomTheme.themeColors.onPrimary,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+        },
+        title = {
+            Text(
+                text = stringResource(id = R.string.top_app_bar_title),
+                color = CustomTheme.themeColors.onPrimary,
+                style = CustomTheme.themeTypography.screenHeading
+            )
+        }
+    )
+}
+
+@Composable
+private fun CustomBottomAppBar(
+    navHostController: NavHostController,
+    bottomNavigationItems: List<BottomNavigationItem>
+) {
+    BottomNavigation(
+        backgroundColor = CustomTheme.themeColors.primary,
+        contentColor = CustomTheme.themeColors.onPrimary
+    ) {
+        val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
+
+        bottomNavigationItems.forEach { screen ->
+            BottomNavigationItem(
+                icon = { Icon(screen.icon, contentDescription = null) },
+                label = {
+                    Text(
+                        stringResource(id = screen.name),
+                        style = CustomTheme.themeTypography.bottomNavigationText
+                    )
+                },
+                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                onClick = {
+                    navHostController.navigate(screen.route) {
+                        popUpTo(navHostController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
     }
 }

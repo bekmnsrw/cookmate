@@ -74,10 +74,8 @@ fun CategoriesContent(
     val lifecycleOwner = rememberLifecycleEvent()
 
     LaunchedEffect(lifecycleOwner) {
-        if (lifecycleOwner == Lifecycle.Event.ON_RESUME) {
-            if (screenState.categories.isEmpty()) {
-                eventHandler.invoke(CategoriesScreenEvent.LoadCategories)
-            }
+        if (lifecycleOwner == Lifecycle.Event.ON_RESUME && screenState.categories.isEmpty()) {
+            eventHandler.invoke(CategoriesScreenEvent.LoadCategories)
         }
     }
 

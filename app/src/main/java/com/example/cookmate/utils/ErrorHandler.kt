@@ -1,7 +1,5 @@
 package com.example.cookmate.utils
 
-enum class ErrorType { NO_INTERNET_CONNECTION, OTHER }
-
 private const val INTERNET_CONNECTION_ERROR = "No internet connection"
 private const val OTHER_ERROR = "Something went wrong"
 

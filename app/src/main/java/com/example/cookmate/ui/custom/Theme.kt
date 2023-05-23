@@ -16,81 +16,17 @@ import com.example.cookmate.ui.custom.ThemeSizes.*
 
 @Composable
 fun Theme(
-    style: ThemePaletteColors = GREEN,
-    textSize: ThemeSizes = MEDIUM,
+    colorPalette: ThemePaletteColors = GREEN,
+    fontSize: ThemeSizes = MEDIUM,
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val themeColors = when {
-        darkTheme -> {
-            when (style) {
-                GREEN -> baseDarkPalette
-                PURPLE -> purpleDarkPalette
-                PINK -> pinkDarkPalette
-            }
-        }
-        else -> {
-            when (style) {
-                GREEN -> baseLightPalette
-                PURPLE -> purpleLightPalette
-                PINK -> pinkLightPalette
-            }
-        }
-    }
-
-    val themeTypography = ThemeTypography(
-        screenHeading = TextStyle(
-            fontSize = when (textSize) {
-                SMALL -> 24.sp
-                MEDIUM -> 26.sp
-                BIG -> 28.sp
-            },
-            fontWeight = FontWeight.Bold
-        ),
-        cardTitle = TextStyle(
-            fontSize = when (textSize) {
-                SMALL -> 16.sp
-                MEDIUM -> 18.sp
-                BIG -> 20.sp
-            },
-            fontWeight = FontWeight.Bold
-        ),
-        cardSubtitle = TextStyle(
-            fontSize = when (textSize) {
-                SMALL -> 14.sp
-                MEDIUM -> 16.sp
-                BIG -> 18.sp
-            }
-        ),
-        title = TextStyle(
-            fontSize = when (textSize) {
-                SMALL -> 18.sp
-                MEDIUM -> 20.sp
-                BIG -> 22.sp
-            },
-            fontWeight = FontWeight.Bold
-        ),
-        subtitle = TextStyle(
-            fontSize = when (textSize) {
-                SMALL -> 16.sp
-                MEDIUM -> 18.sp
-                BIG -> 20.sp
-            },
-            fontWeight = FontWeight.Bold
-        ),
-        buttonText = TextStyle(
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
-        ),
-        bottomNavigationText = TextStyle(
-            fontSize = when (textSize) {
-                SMALL -> 10.sp
-                MEDIUM -> 12.sp
-                BIG -> 14.sp
-            },
-            fontWeight = FontWeight.Medium
-        )
+    val themeColors = themeColorsPalette(
+        style = colorPalette,
+        darkTheme = darkTheme
     )
+
+    val themeTypography = themeTypography(fontSize = fontSize)
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -107,3 +43,75 @@ fun Theme(
         content = content
     )
 }
+
+@Composable
+fun themeColorsPalette(
+    style: ThemePaletteColors,
+    darkTheme: Boolean
+): ThemeColors = when {
+    darkTheme -> {
+        when (style) {
+            GREEN -> baseDarkPalette
+            PURPLE -> purpleDarkPalette
+            PINK -> pinkDarkPalette
+        }
+    }
+    else -> {
+        when (style) {
+            GREEN -> baseLightPalette
+            PURPLE -> purpleLightPalette
+            PINK -> pinkLightPalette
+        }
+    }
+}
+
+@Composable
+fun themeTypography(fontSize: ThemeSizes): ThemeTypography = ThemeTypography(
+    screenHeading = TextStyle(
+        fontSize = when (fontSize) {
+            SMALL -> 24.sp
+            MEDIUM -> 26.sp
+            BIG -> 28.sp
+        },
+        fontWeight = FontWeight.Bold
+    ),
+    cardTitle = TextStyle(
+        fontSize = when (fontSize) {
+            SMALL -> 16.sp
+            MEDIUM -> 18.sp
+            BIG -> 20.sp
+        },
+        fontWeight = FontWeight.Bold
+    ),
+    cardSubtitle = TextStyle(
+        fontSize = when (fontSize) {
+            SMALL -> 14.sp
+            MEDIUM -> 16.sp
+            BIG -> 18.sp
+        }
+    ),
+    title = TextStyle(
+        fontSize = when (fontSize) {
+            SMALL -> 18.sp
+            MEDIUM -> 20.sp
+            BIG -> 22.sp
+        },
+        fontWeight = FontWeight.Bold
+    ),
+    subtitle = TextStyle(
+        fontSize = when (fontSize) {
+            SMALL -> 16.sp
+            MEDIUM -> 18.sp
+            BIG -> 20.sp
+        }, fontWeight = FontWeight.Bold
+    ),
+    buttonText = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium),
+    bottomNavigationText = TextStyle(
+        fontSize = when (fontSize) {
+            SMALL -> 10.sp
+            MEDIUM -> 12.sp
+            BIG -> 14.sp
+        },
+        fontWeight = FontWeight.Medium
+    )
+)

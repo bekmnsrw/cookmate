@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -27,7 +28,6 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
-import coil.size.Scale
 import com.example.cookmate.R
 import com.example.cookmate.presentation.recipes.categories.rememberLifecycleEvent
 import com.example.cookmate.ui.custom.CustomTheme
@@ -111,10 +111,8 @@ fun RecipeContent(
     val lifecycleOwner = rememberLifecycleEvent()
 
     LaunchedEffect(lifecycleOwner) {
-        if (lifecycleOwner == Lifecycle.Event.ON_RESUME) {
-            if (screenState.recipe == null) {
-                eventHandler.invoke(RecipeScreenEvent.LoadingRecipe(dishId))
-            }
+        if (lifecycleOwner == Lifecycle.Event.ON_RESUME && screenState.recipe == null) {
+            eventHandler.invoke(RecipeScreenEvent.LoadingRecipe(dishId))
         }
     }
 
@@ -136,74 +134,45 @@ fun RecipeContent(
 }
 
 @Composable
-fun RecipeInfo(
-    screenState: RecipeScreenState
-) {
+fun RecipeInfo(screenState: RecipeScreenState) {
     val recipe = screenState.recipe
-
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(CustomTheme.themeColors.background)
+        modifier = Modifier.fillMaxSize().background(CustomTheme.themeColors.background)
     ) {
         item {
             if (recipe != null) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(recipe.photoUrl)
-                        .crossfade(true)
                         .placeholder(R.drawable.placeholder)
                         .error(R.drawable.placeholder)
-                        .scale(Scale.FILL)
                         .diskCachePolicy(CachePolicy.ENABLED)
                         .build(),
                     contentDescription = null,
                     modifier = Modifier.fillMaxWidth(),
                     contentScale = ContentScale.Crop
                 )
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
+                Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = recipe.name,
                         modifier = Modifier.padding(bottom = 16.dp),
                         color = CustomTheme.themeColors.onBackground,
                         style = CustomTheme.themeTypography.screenHeading
                     )
-                    Row {
-                        Icon(
-                            imageVector = Icons.Rounded.RestaurantMenu,
-                            contentDescription = null,
-                            modifier = Modifier.padding(end = 8.dp),
-                            tint = CustomTheme.themeColors.primary
-                        )
-                        Text(
-                            text = recipe.category,
-                            color = CustomTheme.themeColors.onBackground,
-                            style = CustomTheme.themeTypography.title
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Public,
-                            contentDescription = null,
-                            modifier = Modifier.padding(end = 8.dp),
-                            tint = CustomTheme.themeColors.primary
-                        )
-                        Text(
-                            text = recipe.country,
-                            color = CustomTheme.themeColors.onBackground,
-                            style = CustomTheme.themeTypography.title,
-                        )
-                    }
+                    TextWithIcon(
+                        imageVector = Icons.Rounded.RestaurantMenu,
+                        text = recipe.category
+                    )
+                    TextWithIcon(
+                        imageVector = Icons.Rounded.Public,
+                        text = recipe.country
+                    )
                     Divider(
-                        color = CustomTheme.themeColors.primary
+                        color = CustomTheme.themeColors.primary,
+                        modifier = Modifier.padding(vertical = 16.dp)
                     )
                     Text(
                         text = recipe.instructions,
-                        modifier = Modifier.padding(top = 16.dp),
                         color = CustomTheme.themeColors.onBackground,
                         style = CustomTheme.themeTypography.subtitle
                     )
@@ -211,9 +180,7 @@ fun RecipeInfo(
             }
         }
     }
-    CircularProgressBar(
-        screenState = screenState
-    )
+    CircularProgressBar(screenState = screenState)
 }
 
 @Composable
@@ -227,5 +194,25 @@ private fun CircularProgressBar(screenState: RecipeScreenState) {
                 color = CustomTheme.themeColors.primary
             )
         }
+    }
+}
+
+@Composable
+private fun TextWithIcon(
+    imageVector: ImageVector,
+    text: String
+) {
+    Row {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            modifier = Modifier.padding(end = 8.dp),
+            tint = CustomTheme.themeColors.primary
+        )
+        Text(
+            text = text,
+            color = CustomTheme.themeColors.onBackground,
+            style = CustomTheme.themeTypography.title,
+        )
     }
 }
