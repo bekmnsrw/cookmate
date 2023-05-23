@@ -106,3 +106,18 @@ dependencies {
     implementation "io.coil-kt:coil-compose:2.3.0"
     implementation "androidx.compose.material:material-icons-extended:$compose_ui_version"
 }
+
+detekt {
+    source = files(projectDir)
+    config = files("${project.rootDir}/config/detekt/detekt.yml")
+    parallel = true
+    reports {
+        txt.enabled = false
+        xml.enabled = false
+        sarif.enabled = false
+        html {
+            enabled = true
+            destination = file("build/reports/detekt.yml")
+        }
+    }
+}
