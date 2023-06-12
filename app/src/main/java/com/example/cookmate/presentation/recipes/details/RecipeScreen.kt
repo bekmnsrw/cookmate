@@ -29,6 +29,7 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.cookmate.R
+import com.example.cookmate.domain.dtos.MealDetailsDto
 import com.example.cookmate.presentation.recipes.categories.rememberLifecycleEvent
 import com.example.cookmate.ui.custom.CustomTheme
 import com.example.cookmate.utils.ErrorType
@@ -121,7 +122,7 @@ fun RecipeContent(
         snackbarHost = {
             SnackbarHost(hostState = it) { data ->
                 Snackbar(
-                    actionColor = CustomTheme.themeColors.primary,
+                    actionColor = CustomTheme.colors.primary,
                     snackbarData = data
                 )
             }
@@ -137,61 +138,68 @@ fun RecipeContent(
 fun RecipeInfo(screenState: RecipeScreenState) {
     val recipe = screenState.recipe
     LazyColumn(
-        modifier = Modifier.fillMaxSize().background(CustomTheme.themeColors.background)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CustomTheme.colors.background)
     ) {
         item {
-            if (recipe != null) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(recipe.photoUrl)
-                        .placeholder(R.drawable.placeholder)
-                        .error(R.drawable.placeholder)
-                        .diskCachePolicy(CachePolicy.ENABLED)
-                        .build(),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.Crop
-                )
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = recipe.name,
-                        modifier = Modifier.padding(bottom = 16.dp),
-                        color = CustomTheme.themeColors.onBackground,
-                        style = CustomTheme.themeTypography.screenHeading
-                    )
-                    TextWithIcon(
-                        imageVector = Icons.Rounded.RestaurantMenu,
-                        text = recipe.category
-                    )
-                    TextWithIcon(
-                        imageVector = Icons.Rounded.Public,
-                        text = recipe.country
-                    )
-                    Divider(
-                        color = CustomTheme.themeColors.primary,
-                        modifier = Modifier.padding(vertical = 16.dp)
-                    )
-                    Text(
-                        text = recipe.instructions,
-                        color = CustomTheme.themeColors.onBackground,
-                        style = CustomTheme.themeTypography.subtitle
-                    )
-                }
-            }
+            recipe?.let { Recipe(recipe = it) }
         }
     }
-    CircularProgressBar(screenState = screenState)
+    CircularProgressBar(
+        isLoading = screenState.isLoading
+    )
 }
 
 @Composable
-private fun CircularProgressBar(screenState: RecipeScreenState) {
-    if (screenState.isLoading) {
+private fun Recipe(recipe: MealDetailsDto) {
+    AsyncImage(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(recipe.photoUrl)
+            .placeholder(R.drawable.placeholder)
+            .error(R.drawable.placeholder)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .build(),
+        contentDescription = null,
+        modifier = Modifier.fillMaxWidth(),
+        contentScale = ContentScale.Crop
+    )
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            text = recipe.name,
+            modifier = Modifier.padding(bottom = 16.dp),
+            color = CustomTheme.colors.onBackground,
+            style = CustomTheme.typography.screenHeading
+        )
+        TextWithIcon(
+            imageVector = Icons.Rounded.RestaurantMenu,
+            text = recipe.category
+        )
+        TextWithIcon(
+            imageVector = Icons.Rounded.Public,
+            text = recipe.country
+        )
+        Divider(
+            color = CustomTheme.colors.primary,
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
+        Text(
+            text = recipe.instructions,
+            color = CustomTheme.colors.onBackground,
+            style = CustomTheme.typography.subtitle
+        )
+    }
+}
+
+@Composable
+private fun CircularProgressBar(isLoading: Boolean) {
+    if (isLoading) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
             CircularProgressIndicator(
-                color = CustomTheme.themeColors.primary
+                color = CustomTheme.colors.primary
             )
         }
     }
@@ -207,12 +215,12 @@ private fun TextWithIcon(
             imageVector = imageVector,
             contentDescription = null,
             modifier = Modifier.padding(end = 8.dp),
-            tint = CustomTheme.themeColors.primary
+            tint = CustomTheme.colors.primary
         )
         Text(
             text = text,
-            color = CustomTheme.themeColors.onBackground,
-            style = CustomTheme.themeTypography.title,
+            color = CustomTheme.colors.onBackground,
+            style = CustomTheme.typography.title,
         )
     }
 }

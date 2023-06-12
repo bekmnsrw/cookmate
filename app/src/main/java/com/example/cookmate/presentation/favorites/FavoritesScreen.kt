@@ -22,6 +22,6 @@ fun FavoritesContent() {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(CustomTheme.themeColors.background)
+            .background(CustomTheme.colors.background)
     ) {}
 }

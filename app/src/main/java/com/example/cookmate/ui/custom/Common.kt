@@ -5,7 +5,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 
-data class ThemeColors(
+data class Colors(
     val background: Color,
     val onBackground: Color,
     val primary: Color,
@@ -15,7 +15,7 @@ data class ThemeColors(
     val outline: Color
 )
 
-data class ThemeTypography(
+data class Typography(
     val screenHeading: TextStyle,
     val cardTitle: TextStyle,
     val cardSubtitle: TextStyle,
@@ -26,16 +26,16 @@ data class ThemeTypography(
 )
 
 object CustomTheme {
-    val themeColors: ThemeColors
-    @Composable get() = LocalThemeColors.current
+    val colors: Colors
+    @Composable get() = LocalColors.current
 
-    val themeTypography: ThemeTypography
-    @Composable get() = LocalThemeTypography.current
+    val typography: Typography
+    @Composable get() = LocalTypography.current
 }
 
-enum class ThemePaletteColors { GREEN, PURPLE, PINK }
+enum class PaletteColors { GREEN, PURPLE, PINK }
 
-enum class ThemeSizes { SMALL, MEDIUM, BIG }
+enum class Sizes { SMALL, MEDIUM, BIG }
 
-val LocalThemeColors = staticCompositionLocalOf<ThemeColors> { error("No colors provided") }
-val LocalThemeTypography = staticCompositionLocalOf<ThemeTypography> { error("No typography provided") }
+val LocalColors = staticCompositionLocalOf<Colors> { error("No colors provided") }
+val LocalTypography = staticCompositionLocalOf<Typography> { error("No typography provided") }

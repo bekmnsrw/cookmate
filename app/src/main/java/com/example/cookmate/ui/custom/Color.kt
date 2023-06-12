@@ -2,7 +2,7 @@ package com.example.cookmate.ui.custom
 
 import androidx.compose.ui.graphics.Color
 
-internal val baseLightPalette = ThemeColors(
+internal val baseLightPalette = Colors(
     background = Color(0xfffdfdf6),
     onBackground = Color(0xff1a1c18),
     primary = Color(0xff1e6d0b),
@@ -12,7 +12,7 @@ internal val baseLightPalette = ThemeColors(
     outline = Color(0xff73796e)
 )
 
-internal val baseDarkPalette = ThemeColors(
+internal val baseDarkPalette = Colors(
     background = Color(0xff1a1c18),
     onBackground = Color(0xffe2e3dc),
     primary = Color(0xff88da6e),

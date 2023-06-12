@@ -41,7 +41,7 @@ fun SettingsContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(CustomTheme.themeColors.background),
+            .background(CustomTheme.colors.background),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
@@ -76,7 +76,7 @@ fun DarkModeCard(
     eventHandler: (SettingsScreenEvent) -> Unit
 ) {
     Card(
-        backgroundColor = CustomTheme.themeColors.surface,
+        backgroundColor = CustomTheme.colors.surface,
         elevation = 6.dp,
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -88,8 +88,8 @@ fun DarkModeCard(
         ) {
             Text(
                 text = stringResource(id = R.string.dark_mode),
-                color = CustomTheme.themeColors.onSurface,
-                style = CustomTheme.themeTypography.cardTitle
+                color = CustomTheme.colors.onSurface,
+                style = CustomTheme.typography.cardTitle
             )
             Column(
                 horizontalAlignment = Alignment.End,
@@ -106,10 +106,10 @@ fun DarkModeCard(
                         )
                     },
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = CustomTheme.themeColors.onPrimary,
-                        checkedTrackColor = CustomTheme.themeColors.primary,
-                        uncheckedThumbColor = CustomTheme.themeColors.outline,
-                        uncheckedTrackColor = CustomTheme.themeColors.primary,
+                        checkedThumbColor = CustomTheme.colors.onPrimary,
+                        checkedTrackColor = CustomTheme.colors.primary,
+                        uncheckedThumbColor = CustomTheme.colors.outline,
+                        uncheckedTrackColor = CustomTheme.colors.primary,
                     )
                 )
             }
@@ -124,7 +124,7 @@ fun ColorPaletteCard(
     eventHandler: (SettingsScreenEvent) -> Unit
 ) {
     Card(
-        backgroundColor = CustomTheme.themeColors.surface,
+        backgroundColor = CustomTheme.colors.surface,
         elevation = 6.dp,
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -136,8 +136,8 @@ fun ColorPaletteCard(
         ) {
             Text(
                 text = stringResource(id = R.string.color_palette),
-                color = CustomTheme.themeColors.onSurface,
-                style = CustomTheme.themeTypography.cardTitle,
+                color = CustomTheme.colors.onSurface,
+                style = CustomTheme.typography.cardTitle,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             Row(
@@ -146,19 +146,19 @@ fun ColorPaletteCard(
             ) {
                 ColorCard(
                     settingsEventBus = settingsEventBus,
-                    colorPalette = ThemePaletteColors.GREEN,
+                    colorPalette = PaletteColors.GREEN,
                     eventHandler = eventHandler,
                     currentSettingsState = currentSettingsState
                 )
                 ColorCard(
                     settingsEventBus = settingsEventBus,
-                    colorPalette = ThemePaletteColors.PURPLE,
+                    colorPalette = PaletteColors.PURPLE,
                     eventHandler = eventHandler,
                     currentSettingsState = currentSettingsState
                 )
                 ColorCard(
                     settingsEventBus = settingsEventBus,
-                    colorPalette = ThemePaletteColors.PINK,
+                    colorPalette = PaletteColors.PINK,
                     eventHandler = eventHandler,
                     currentSettingsState = currentSettingsState
                 )
@@ -171,7 +171,7 @@ fun ColorPaletteCard(
 @Composable
 private fun ColorCard(
     settingsEventBus: SettingsEventBus,
-    colorPalette: ThemePaletteColors,
+    colorPalette: PaletteColors,
     eventHandler: (SettingsScreenEvent) -> Unit,
     currentSettingsState: CurrentSettings
 ) {
@@ -179,15 +179,15 @@ private fun ColorCard(
         modifier = Modifier.size(56.dp, 56.dp),
         backgroundColor = if (currentSettingsState.isDarkMode) {
             when (colorPalette) {
-                ThemePaletteColors.GREEN -> baseDarkPalette.primary
-                ThemePaletteColors.PURPLE -> purpleDarkPalette.primary
-                ThemePaletteColors.PINK -> pinkDarkPalette.primary
+                PaletteColors.GREEN -> baseDarkPalette.primary
+                PaletteColors.PURPLE -> purpleDarkPalette.primary
+                PaletteColors.PINK -> pinkDarkPalette.primary
             }
         } else {
             when (colorPalette) {
-                ThemePaletteColors.GREEN -> baseLightPalette.primary
-                ThemePaletteColors.PURPLE -> purpleLightPalette.primary
-                ThemePaletteColors.PINK -> pinkLightPalette.primary
+                PaletteColors.GREEN -> baseLightPalette.primary
+                PaletteColors.PURPLE -> purpleLightPalette.primary
+                PaletteColors.PINK -> pinkLightPalette.primary
             }
         },
         elevation = 6.dp,
@@ -210,7 +210,7 @@ fun FontSizeCard(
     eventHandler: (SettingsScreenEvent) -> Unit
 ) {
     Card(
-        backgroundColor = CustomTheme.themeColors.surface,
+        backgroundColor = CustomTheme.colors.surface,
         elevation = 6.dp,
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -221,8 +221,8 @@ fun FontSizeCard(
         ) {
             Text(
                 text = stringResource(id = R.string.font_size),
-                color = CustomTheme.themeColors.onSurface,
-                style = CustomTheme.themeTypography.cardTitle,
+                color = CustomTheme.colors.onSurface,
+                style = CustomTheme.typography.cardTitle,
                 modifier = Modifier.padding(
                     bottom = 16.dp,
                     start = 16.dp
@@ -235,21 +235,21 @@ fun FontSizeCard(
                 CustomRadioButton(
                     label = stringResource(id = R.string.font_big),
                     currentSettingsState = currentSettingsState,
-                    themeSizes = ThemeSizes.BIG,
+                    sizes = Sizes.BIG,
                     settingsEventBus = settingsEventBus,
                     eventHandler = eventHandler
                 )
                 CustomRadioButton(
                     label = stringResource(id = R.string.font_medium),
                     currentSettingsState = currentSettingsState,
-                    themeSizes = ThemeSizes.MEDIUM,
+                    sizes = Sizes.MEDIUM,
                     settingsEventBus = settingsEventBus,
                     eventHandler = eventHandler
                 )
                 CustomRadioButton(
                     label = stringResource(id = R.string.font_small),
                     currentSettingsState = currentSettingsState,
-                    themeSizes = ThemeSizes.SMALL,
+                    sizes = Sizes.SMALL,
                     settingsEventBus = settingsEventBus,
                     eventHandler = eventHandler
                 )
@@ -262,7 +262,7 @@ fun FontSizeCard(
 private fun CustomRadioButton(
     label: String,
     currentSettingsState: CurrentSettings,
-    themeSizes: ThemeSizes,
+    sizes: Sizes,
     settingsEventBus: SettingsEventBus,
     eventHandler: (SettingsScreenEvent) -> Unit
 ) {
@@ -270,24 +270,24 @@ private fun CustomRadioButton(
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
-            selected = currentSettingsState.fontSize == themeSizes,
+            selected = currentSettingsState.fontSize == sizes,
             colors = RadioButtonDefaults.colors(
-                selectedColor = CustomTheme.themeColors.primary,
-                unselectedColor = CustomTheme.themeColors.outline
+                selectedColor = CustomTheme.colors.primary,
+                unselectedColor = CustomTheme.colors.outline
             ),
             onClick = {
                 settingsEventBus.eventHandler(
-                    SettingsScreenEvent.UpdateFontSize(themeSizes)
+                    SettingsScreenEvent.UpdateFontSize(sizes)
                 )
                 eventHandler.invoke(
-                    SettingsScreenEvent.UpdateFontSize(themeSizes)
+                    SettingsScreenEvent.UpdateFontSize(sizes)
                 )
             }
         )
         Text(
             text = label,
-            color = CustomTheme.themeColors.onSurface,
-            style = CustomTheme.themeTypography.cardSubtitle,
+            color = CustomTheme.colors.onSurface,
+            style = CustomTheme.typography.cardSubtitle,
             modifier = Modifier.padding(start = 8.dp)
         )
     }

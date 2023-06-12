@@ -88,16 +88,17 @@ fun DishesContent(
         snackbarHost = {
             SnackbarHost(hostState = it) { data ->
                 Snackbar(
-                    actionColor = CustomTheme.themeColors.primary,
+                    actionColor = CustomTheme.colors.primary,
                     snackbarData = data
                 )
             }
         }
     ) {
         DishesList(
-            screenState = screenState,
-            navController = navController
-        )
+            screenState = screenState
+        ) {
+            navController.navigate(it)
+        }
     }
 }
 
@@ -141,7 +142,7 @@ private fun CategoriesScreenEvent(
 @Composable
 fun DishesList(
     screenState: DishesScreenState,
-    navController: NavController
+    onItemClick: (String) -> Unit
 ) {
     val dishes = screenState.dishes
 
@@ -152,16 +153,16 @@ fun DishesList(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier
             .fillMaxSize()
-            .background(CustomTheme.themeColors.background)
+            .background(CustomTheme.colors.background)
     ) {
         items(screenState.dishes.size) {
             ListItem(mealDto = dishes[it]) { mealId ->
-                navController.navigate(Screen.Recipe.createRoute(mealId))
+                onItemClick.invoke(Screen.Recipe.createRoute(mealId))
             }
         }
     }
     CircularProgressBar(
-        screenState = screenState
+        isLoading = screenState.isLoading
     )
 }
 
@@ -173,7 +174,7 @@ fun ListItem(
     Card(
         elevation = 6.dp,
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = CustomTheme.themeColors.surface
+        backgroundColor = CustomTheme.colors.surface
     ) {
         Column {
             AsyncImage(
@@ -195,18 +196,18 @@ fun ListItem(
                     text = mealDto.name,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = CustomTheme.themeColors.onSurface,
-                    style = CustomTheme.themeTypography.cardTitle
+                    color = CustomTheme.colors.onSurface,
+                    style = CustomTheme.typography.cardTitle
                 )
                 Button(
                     onClick = { onClick.invoke(mealDto.id) },
                     shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = CustomTheme.themeColors.primary)
+                    colors = ButtonDefaults.buttonColors(backgroundColor = CustomTheme.colors.primary)
                 ) {
                     Text(
                         text = stringResource(id = R.string.recipe_title),
-                        color = CustomTheme.themeColors.onPrimary,
-                        style = CustomTheme.themeTypography.buttonText
+                        color = CustomTheme.colors.onPrimary,
+                        style = CustomTheme.typography.buttonText
                     )
                 }
             }
@@ -215,14 +216,14 @@ fun ListItem(
 }
 
 @Composable
-private fun CircularProgressBar(screenState: DishesScreenState) {
-    if (screenState.isLoading) {
+private fun CircularProgressBar(isLoading: Boolean) {
+    if (isLoading) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
             CircularProgressIndicator(
-                color = CustomTheme.themeColors.primary
+                color = CustomTheme.colors.primary
             )
         }
     }

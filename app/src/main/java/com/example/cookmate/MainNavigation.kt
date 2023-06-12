@@ -2,7 +2,13 @@ package com.example.cookmate
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
@@ -67,7 +73,7 @@ sealed class Screen(val route: String) {
 @Composable
 fun NavigationHost(
     navHostController: NavHostController = rememberNavController(),
-    startDestination: BottomNavigationItem = BottomNavigationItem.Recipes
+    startDestination: BottomNavigationItem = BottomNavigationItem.Recipes,
 ) {
     val items = listOf(
         BottomNavigationItem.Recipes,
@@ -79,7 +85,7 @@ fun NavigationHost(
         bottomBar = {
             CustomBottomAppBar(
                 navHostController = navHostController,
-                bottomNavigationItems = items
+                bottomNavigationItems = items,
             )
         },
         topBar = {
@@ -116,13 +122,13 @@ private fun CustomTopAppBar(
     navHostController: NavHostController
 ) {
     TopAppBar(
-        backgroundColor = CustomTheme.themeColors.primary,
+        backgroundColor = CustomTheme.colors.primary,
         navigationIcon = {
             IconButton(onClick = { navHostController.navigateUp() }) {
                 Icon(
                     imageVector = Icons.Rounded.ArrowBack,
                     contentDescription = null,
-                    tint = CustomTheme.themeColors.onPrimary,
+                    tint = CustomTheme.colors.onPrimary,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
@@ -130,8 +136,8 @@ private fun CustomTopAppBar(
         title = {
             Text(
                 text = stringResource(id = R.string.top_app_bar_title),
-                color = CustomTheme.themeColors.onPrimary,
-                style = CustomTheme.themeTypography.screenHeading
+                color = CustomTheme.colors.onPrimary,
+                style = CustomTheme.typography.screenHeading
             )
         }
     )
@@ -143,8 +149,8 @@ private fun CustomBottomAppBar(
     bottomNavigationItems: List<BottomNavigationItem>
 ) {
     BottomNavigation(
-        backgroundColor = CustomTheme.themeColors.primary,
-        contentColor = CustomTheme.themeColors.onPrimary
+        backgroundColor = CustomTheme.colors.primary,
+        contentColor = CustomTheme.colors.onPrimary,
     ) {
         val navBackStackEntry by navHostController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
@@ -155,7 +161,7 @@ private fun CustomBottomAppBar(
                 label = {
                     Text(
                         stringResource(id = screen.name),
-                        style = CustomTheme.themeTypography.bottomNavigationText
+                        style = CustomTheme.typography.bottomNavigationText
                     )
                 },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,

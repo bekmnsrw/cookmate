@@ -84,16 +84,17 @@ fun CategoriesContent(
         snackbarHost = {
             SnackbarHost(hostState = it) { data ->
                 Snackbar(
-                    actionColor = CustomTheme.themeColors.primary,
+                    actionColor = CustomTheme.colors.primary,
                     snackbarData = data
                 )
             }
         }
     ) {
         CategoriesList(
-            screenState = screenState,
-            navController = navController
-        )
+            screenState = screenState
+        ) {
+           navController.navigate(it)
+        }
     }
 }
 
@@ -137,12 +138,12 @@ private fun CategoriesScreenActions(
 @Composable
 fun CategoriesList(
     screenState: CategoriesScreenState,
-    navController: NavController
+    onItemClick: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(CustomTheme.themeColors.background),
+            .background(CustomTheme.colors.background),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
@@ -151,12 +152,12 @@ fun CategoriesList(
             key = { it.id }
         ) {
             ListItem(categoryDto = it) { categoryName ->
-                navController.navigate(Screen.Dishes.createRoute(categoryName))
+                onItemClick.invoke(Screen.Dishes.createRoute(categoryName))
             }
         }
     }
     CircularProgressBar(
-        screenState = screenState
+        isLoading = screenState.isLoading
     )
 }
 
@@ -171,7 +172,7 @@ fun ListItem(
             .clickable { onClick.invoke(categoryDto.name) },
         elevation = 6.dp,
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = CustomTheme.themeColors.surface
+        backgroundColor = CustomTheme.colors.surface
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -197,15 +198,15 @@ fun ListItem(
             ) {
                 Text(
                     text = categoryDto.name,
-                    color = CustomTheme.themeColors.onSurface,
-                    style = CustomTheme.themeTypography.cardTitle
+                    color = CustomTheme.colors.onSurface,
+                    style = CustomTheme.typography.cardTitle
                 )
                 Text(
                     text = categoryDto.description,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
-                    color = CustomTheme.themeColors.onSurface,
-                    style = CustomTheme.themeTypography.cardSubtitle
+                    color = CustomTheme.colors.onSurface,
+                    style = CustomTheme.typography.cardSubtitle
                 )
             }
         }
@@ -213,14 +214,14 @@ fun ListItem(
 }
 
 @Composable
-private fun CircularProgressBar(screenState: CategoriesScreenState) {
-    if (screenState.isLoading) {
+private fun CircularProgressBar(isLoading: Boolean) {
+    if (isLoading) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize(),
         ) {
             CircularProgressIndicator(
-                color = CustomTheme.themeColors.primary
+                color = CustomTheme.colors.primary
             )
         }
     }
