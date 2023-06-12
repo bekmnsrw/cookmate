@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">cookmate</string>
+    <string name="top_app_bar_title">Cookmate</string>
+
+    <!-- Bottom Navigation Labels -->
+    <string name="screen_recipes">Recipes</string>
+    <string name="screen_favorites">Favorites</string>
+    <string name="screen_settings">Settings</string>
+
+    <!-- Screen Titles -->
+    <string name="categories_title">Categories</string>
+    <string name="dishes_title">Dishes</string>
+    <string name="settings_title">Settings</string>
+    <string name="favorites_title">Favorites</string>
+    <string name="recipe_title">Recipe</string>
+
+    <!-- Settings -->
+    <string name="dark_mode">Dark Mode</string>
+    <string name="color_palette">Color Palette</string>
+    <string name="font_size">Font Size</string>
+    <string name="font_big">Big</string>
+    <string name="font_medium">Medium</string>
+    <string name="font_small">Small</string>
 </resources>

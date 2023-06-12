@@ -3,43 +3,41 @@ package com.example.cookmate
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.cookmate.ui.theme.CookmateTheme
+import androidx.activity.viewModels
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
+import com.example.cookmate.presentation.settings.SettingsEventBus
+import com.example.cookmate.ui.custom.Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: SettingsEventBus by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CookmateTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+            val settingsEventBus = remember { viewModel }
+            val currentSettings = settingsEventBus.currentSettings.collectAsState().value
+
+            Theme(
+                colorPalette = currentSettings.colorPalette,
+                fontSize = currentSettings.fontSize,
+                darkTheme = currentSettings.isDarkMode,
+            ) {
+                CompositionLocalProvider(
+                    LocalSettingsEventBus provides settingsEventBus
                 ) {
-                    Greeting("Android")
+                    NavigationHost()
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    CookmateTheme {
-        Greeting("Android")
-    }
+val LocalSettingsEventBus = staticCompositionLocalOf<SettingsEventBus> {
+    error("No settings event bus provided")
 }
