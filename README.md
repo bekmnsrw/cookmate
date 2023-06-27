@@ -43,7 +43,7 @@ Bottom navigation allows you to navigate to settings screen, where you can chang
   
 ***
 
-You can also follow this [link](https://drive.google.com/drive/folders/1pUMAHhiATXuxHM4Bo0a-BI1DWe21Dku9) to watch a video with app's functionality demonstration 
+You can also follow this [link](https://drive.google.com/file/d/13ZywVuNdYMz9srbky9IsgmBbxtdqA5m8/view?usp=drive_link) to watch a video with app's functionality demonstration 
 
 # Technologies
 - Kotlin
